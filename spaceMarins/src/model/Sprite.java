@@ -10,6 +10,7 @@ public class Sprite {
     private final static int MAX_WIDTH_HEIGHT = 40;
     private final static int INITIAL_POINT_X = 500;
     private final static int INITIAL_POINT_Y = 500;
+    private final static  int ACCEL = 1;
     private BufferedImage canvas;
     private int width;
     private int height;
@@ -20,6 +21,8 @@ public class Sprite {
     private static  MarineSprites marineSprites;
     private boolean colission;
     private int movement;
+    private int xPointDestiny;
+    private int yPointDestiny;
 
     public Sprite() {
         this.canvas = Sprite.getMarineSprites().getmSs();
@@ -31,8 +34,12 @@ public class Sprite {
         this.height = MAX_WIDTH_HEIGHT;
         this.x = INITIAL_POINT_X;
         this.y = INITIAL_POINT_Y;
+        this.xPointDestiny = -1;
+        this.yPointDestiny = -1;
+        this.xSpeed = ACCEL;
+        this.ySpeed = ACCEL;
+
         this.colission = false;
-        generarAceleracionAlt();
     }
 
     public Sprite(BufferedImage img, int width, int height, int x, int y) {
@@ -44,6 +51,7 @@ public class Sprite {
         this.width = width;
         this.x = x;
         this.y = y;
+
 
     }
     public void generarCuadradoNegro() {
@@ -124,26 +132,6 @@ public class Sprite {
 
     }
 
-    public void generarAceleracionAlt() {
-        this.xSpeed = xSpeed;
-        this.ySpeed = ySpeed;
-        this.xSpeed = genAlt();
-        this.ySpeed = genAlt();
-        while (this.xSpeed == 0 && this.ySpeed == 0) {
-            switch ((int) Math.floor(Math.random() * 2)) {
-                case 0: {
-                    this.xSpeed = genAlt();
-                    break;
-                }
-                case 1: {
-                    this.ySpeed = genAlt();
-                    break;
-                }
-            }
-        }
-
-
-    }
 
     public int genAlt() {
         return (int) Math.floor(Math.random() * 5);
@@ -246,5 +234,52 @@ public class Sprite {
         }if (movement == 10){
             movement =1;
         }
+    }
+    public  void walk(){
+        if (x != xPointDestiny && xPointDestiny !=-1){
+            x+= xSpeed;
+        }else{
+            xPointDestiny = -1;
+            xSpeed=0;
+        }
+        if (y != yPointDestiny && yPointDestiny != -1){
+            y+=ySpeed;
+        }else{
+            yPointDestiny = -1;
+            ySpeed = 0;
+        }
+
+    }
+    public void setEndPoints(int xEnd,int yEnd){
+        this.xPointDestiny = xEnd;
+        this.yPointDestiny = yEnd;
+        if (xEnd<x){
+            xSpeed = -1*Math.abs(ACCEL);
+        }else{
+            xSpeed = Math.abs(ACCEL);
+        }
+        if (yEnd<y){
+            ySpeed = -1*Math.abs(ACCEL);
+        }else {
+            ySpeed = Math.abs(ACCEL);
+        }
+
+
+    }
+
+    public int getxPointDestiny() {
+        return xPointDestiny;
+    }
+
+    public void setxPointDestiny(int xPointDestiny) {
+        this.xPointDestiny = xPointDestiny;
+    }
+
+    public int getyPointDestiny() {
+        return yPointDestiny;
+    }
+
+    public void setyPointDestiny(int yPointDestiny) {
+        this.yPointDestiny = yPointDestiny;
     }
 }

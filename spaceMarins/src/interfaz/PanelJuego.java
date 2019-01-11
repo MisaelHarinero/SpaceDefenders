@@ -17,7 +17,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 public class PanelJuego extends JPanel implements MouseListener, MouseMotionListener,Runnable, ComponentListener {
-	private ArrayList<Sprite> marines;
+	private ArrayList<Sprite> squad;
 	private final static int MAX_WIDTH = 40;
 	private final static int INVULNERABILITY = 20;
 	private double seconds;
@@ -29,15 +29,17 @@ public class PanelJuego extends JPanel implements MouseListener, MouseMotionList
 	private MarineSprites spritesVector;
 	private boolean resizeBackground;
 	private final static int COST_MARINE = 10;
+	private final static  Point SQUADPOS [] = {new Point(0,0),new Point(10,-10),new Point(10,10),new Point(-10,10),new Point(-10,-10),new Point(20,-20),new Point(20,20),new Point(-20,20),new Point(-20,-20)
+			,new Point(30,-30),new Point(30,30),new Point(-30,30),new Point(-30,-30)};
 	private int refreshTime;
 	public PanelJuego() {
 		this.spritesVector = new MarineSprites(MAX_WIDTH,MAX_WIDTH);
 		Sprite.setMarineSprites(this.spritesVector);
-		this.marines = new ArrayList<>();
+		this.squad = new ArrayList<>();
 		this.addMouseListener(this);
 		this.addMouseMotionListener(this);
 		chargeImages();
-		this.cristal = 10;
+		this.cristal = 50;
 		this.seconds =0;
 		 this.time  = new Timer(1000, new ActionListener() {
 			@Override
@@ -77,11 +79,11 @@ public class PanelJuego extends JPanel implements MouseListener, MouseMotionList
 	}
 	public void paintSpraits(Graphics g){
 		if (this.refreshTime>=INVULNERABILITY){
-			Sprite.comprobarSprites(this.marines);
+			//Sprite.comprobarSprites(this.squad);
 		}
-		for (int i = 0; i <this.marines.size() ; i++) {
-			g.drawImage(this.marines.get(i).getCanvas(), this.marines.get(i).getX(), this.marines.get(i).getY(), this.marines.get(i).getWidth(), this.marines.get(i).getHeight(), null);
-			this.marines.get(i).move(getWidth(),getHeight());
+		for (int i = 0; i <this.squad.size() ; i++) {
+			g.drawImage(this.squad.get(i).getCanvas(), this.squad.get(i).getX(), this.squad.get(i).getY(), this.squad.get(i).getWidth(), this.squad.get(i).getHeight(), null);
+			this.squad.get(i).walk();
 		}
 		this.jlPoints.setText("CRISTAL: "+this.cristal);
 		this.refreshTime++;
@@ -96,11 +98,18 @@ public class PanelJuego extends JPanel implements MouseListener, MouseMotionList
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if (cristal >= COST_MARINE){
-			this.marines.add(new Marine());
-			cristal-=COST_MARINE;
-		}
+		if (SwingUtilities.isLeftMouseButton(e)){
+			if (cristal >= COST_MARINE){
+				this.squad.add(new Marine());
+				cristal-=COST_MARINE;
+			}
+		}else{
+			for (int i = 0; i < this.squad.size() ; i++) {
+				this.squad.get(i).setEndPoints(e.getX()+(int)SQUADPOS[i].getX(),e.getY()+(int)SQUADPOS[i].getY());
+			}
 
+			
+		}
 	}
 
 

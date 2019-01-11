@@ -163,6 +163,7 @@ public class MarineSprites {
         try {
             bf = ImageIO.read(new File(rute));
         } catch (IOException e) {
+            System.out.println(rute);
             e.printStackTrace();
         }
         if (bf != null){
