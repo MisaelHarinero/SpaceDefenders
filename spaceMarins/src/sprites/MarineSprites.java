@@ -27,6 +27,18 @@ public class MarineSprites {
     private BufferedImage mEp;
     private BufferedImage mEml;
     private BufferedImage mEmr;
+    private BufferedImage mQs;
+    private BufferedImage mQp;
+    private BufferedImage mQml;
+    private BufferedImage mQmr;
+    private BufferedImage mAs;
+    private BufferedImage mAp;
+    private BufferedImage mAml;
+    private BufferedImage mAmr;
+    private BufferedImage mZs;
+    private BufferedImage mZp;
+    private BufferedImage mZml;
+    private BufferedImage mZmr;
     public MarineSprites(int width, int height){
         chargeSprites(width,height);
 
@@ -34,7 +46,7 @@ public class MarineSprites {
 
     }
     public void chargeSprites(int width, int height){
-        String letras [] = {"W","D","S","X","E"};
+        String letras [] = {"A","W","D","S","X","E","Q","Z"};
         String rutaFin[] = {"s.png","p.png","ml.png","mr.png"};
         String rutaIni = "resource/marine/";
         BufferedImage bf = null;
@@ -147,6 +159,72 @@ public class MarineSprites {
                             }
                             case 3:{
                                 this.mEmr = bf;
+                                break;
+                            }
+
+                        }
+                        break;
+                    }
+                    case "Q":{
+                        switch (j){
+                            case 0:{
+                                this.mQs = bf;
+                                break;
+                            }
+                            case 1:{
+                                this.mQp = bf;
+                                break;
+                            }
+                            case 2:{
+                                this.mQml = bf;
+                                break;
+                            }
+                            case 3:{
+                                this.mQmr = bf;
+                                break;
+                            }
+
+                        }
+                        break;
+                    }
+                    case "A":{
+                        switch (j){
+                            case 0:{
+                                this.mAs = bf;
+                                break;
+                            }
+                            case 1:{
+                                this.mAp = bf;
+                                break;
+                            }
+                            case 2:{
+                                this.mAml = bf;
+                                break;
+                            }
+                            case 3:{
+                                this.mAmr = bf;
+                                break;
+                            }
+
+                        }
+                        break;
+                    }
+                    case "Z":{
+                        switch (j){
+                            case 0:{
+                                this.mZs = bf;
+                                break;
+                            }
+                            case 1:{
+                                this.mZp = bf;
+                                break;
+                            }
+                            case 2:{
+                                this.mZml = bf;
+                                break;
+                            }
+                            case 3:{
+                                this.mZmr = bf;
                                 break;
                             }
 
@@ -343,4 +421,100 @@ public class MarineSprites {
     public void setmEmr(BufferedImage mEmr) {
         this.mEmr = mEmr;
     }
+    public BufferedImage getmQs() {
+        return mQs;
+    }
+
+    public void setmQs(BufferedImage mQs) {
+        this.mQs = mQs;
+    }
+
+    public BufferedImage getmQp() {
+        return mQp;
+    }
+
+    public void setmQp(BufferedImage mQp) {
+        this.mQp = mQp;
+    }
+
+    public BufferedImage getmQml() {
+        return mQml;
+    }
+
+    public void setmQml(BufferedImage mQml) {
+        this.mQml = mQml;
+    }
+
+    public BufferedImage getmQmr() {
+        return mQmr;
+    }
+
+    public void setmQmr(BufferedImage mQmr) {
+        this.mQmr = mQmr;
+    }
+
+    public BufferedImage getmAs() {
+        return mAs;
+    }
+
+    public void setmAs(BufferedImage mAs) {
+        this.mAs = mAs;
+    }
+
+    public BufferedImage getmAp() {
+        return mAp;
+    }
+
+    public void setmAp(BufferedImage mAp) {
+        this.mAp = mAp;
+    }
+
+    public BufferedImage getmAml() {
+        return mAml;
+    }
+
+    public void setmAml(BufferedImage mAml) {
+        this.mAml = mAml;
+    }
+
+    public BufferedImage getmAmr() {
+        return mAmr;
+    }
+
+    public void setmAmr(BufferedImage mAmr) {
+        this.mAmr = mAmr;
+    }
+
+    public BufferedImage getmZs() {
+        return mZs;
+    }
+
+    public void setmZs(BufferedImage mZs) {
+        this.mZs = mZs;
+    }
+
+    public BufferedImage getmZp() {
+        return mZp;
+    }
+
+    public void setmZp(BufferedImage mZp) {
+        this.mZp = mZp;
+    }
+
+    public BufferedImage getmZml() {
+        return mZml;
+    }
+
+    public void setmZml(BufferedImage mZml) {
+        this.mZml = mZml;
+    }
+
+    public BufferedImage getmZmr() {
+        return mZmr;
+    }
+
+    public void setmZmr(BufferedImage mZmr) {
+        this.mZmr = mZmr;
+    }
+
 }

@@ -3,6 +3,7 @@ package interfaz;
 import model.Marine;
 import model.Sprite;
 import sprites.MarineSprites;
+import sprites.SpriteLife;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -17,7 +18,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 
 public class PanelJuego extends JPanel implements MouseListener, MouseMotionListener,Runnable, ComponentListener {
-	private ArrayList<Sprite> squad;
+	private ArrayList<Marine> squad;
 	private final static int MAX_WIDTH = 40;
 	private final static int INVULNERABILITY = 20;
 	private double seconds;
@@ -83,9 +84,15 @@ public class PanelJuego extends JPanel implements MouseListener, MouseMotionList
 		}
 		for (int i = 0; i <this.squad.size() ; i++) {
 			g.drawImage(this.squad.get(i).getCanvas(), this.squad.get(i).getX(), this.squad.get(i).getY(), this.squad.get(i).getWidth(), this.squad.get(i).getHeight(), null);
+		}
+		for (int i = 0; i <this.squad.size() ; i++) {
+			g.drawImage(this.squad.get(i).getLifeBar().getBf(),this.squad.get(i).getLifeBar().getX(),this.squad.get(i).getLifeBar().getY(), SpriteLife.MAX_WIDTH,SpriteLife.MAX_HEIGHT,null);
+		}
+		for (int i = 0; i <this.squad.size() ; i++) {
 			this.squad.get(i).walk();
 		}
-		this.jlPoints.setText("CRISTAL: "+this.cristal);
+
+		this.jlPoints.setText("SPACEMARINS   ||||||||       Cristal: "+this.cristal+"    	    Soldiers : "+(this.squad.size()==SQUADPOS.length ? "MAX":this.squad.size()));
 		this.refreshTime++;
 	}
 
@@ -179,9 +186,12 @@ public class PanelJuego extends JPanel implements MouseListener, MouseMotionList
 		settingsObject.insets = new Insets(20,20,0,0);
 		settingsObject.anchor =GridBagConstraints.NORTHEAST;
 		this.jlPoints = new JLabel();
-		this.jlPoints.setText(Double.toString(seconds));
-		this.jlPoints.setOpaque(false);
-		this.jlPoints.setForeground(Color.GREEN);
+		this.jlPoints.setBackground(Color.darkGray);
+		this.jlPoints.setBorder(BorderFactory.createRaisedBevelBorder());
+		this.jlPoints.setForeground(Color.WHITE);
+		this.jlPoints.setOpaque(true);
+		this.jlPoints.setHorizontalAlignment(JLabel.CENTER);
+		this.jlPoints.setFont(new Font(Font.SANS_SERIF,Font.BOLD,18));
 		this.add(this.jlPoints,settingsObject);
 	}
 	public BufferedImage resizeImage(int width,int height,BufferedImage img){
