@@ -2,6 +2,7 @@ package interfaz;
 
 import model.Marine;
 import model.Sprite;
+import model.Zerg;
 import sprites.MarineSprites;
 import sprites.SpriteLife;
 
@@ -17,7 +18,7 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 
-public class PanelJuego extends JPanel implements MouseListener, MouseMotionListener,Runnable, ComponentListener {
+public class PanelJuego implements IGameScreen {
 	private ArrayList<Marine> squad;
 	private final static int MAX_WIDTH = 40;
 	private final static int INVULNERABILITY = 20;
@@ -29,50 +30,17 @@ public class PanelJuego extends JPanel implements MouseListener, MouseMotionList
 	private int cristal;
 	private MarineSprites spritesVector;
 	private boolean resizeBackground;
+	private ArrayList<Zerg>zergs;
 	private final static int COST_MARINE = 10;
 	private final static  Point SQUADPOS [] = {new Point(0,0),new Point(10,-10),new Point(10,10),new Point(-10,10),new Point(-10,-10),new Point(20,-20),new Point(20,20),new Point(-20,20),new Point(-20,-20)
 			,new Point(30,-30),new Point(30,30),new Point(-30,30),new Point(-30,-30)};
 	private int refreshTime;
-	public PanelJuego() {
-		this.spritesVector = new MarineSprites(MAX_WIDTH,MAX_WIDTH);
-		Sprite.setMarineSprites(this.spritesVector);
-		this.squad = new ArrayList<>();
-		this.addMouseListener(this);
-		this.addMouseMotionListener(this);
-		chargeImages();
-		this.cristal = 50;
-		this.seconds =0;
-		 this.time  = new Timer(1000, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				seconds +=1;
-				if (seconds %3 == 0){
-					cristal++;
-				}
-			}
-		});
-		this.refreshTime = 0;
-		this.resizeBackground = false;
-		setLayout(new GridBagLayout());
-		genComponents();
-		this.addComponentListener(this);
-		Thread th = new Thread(this);
-		th.start();
-
+	private PantallaJuego pantallaJuego;
+	public PanelJuego(PantallaJuego pantallaJuego) {
+		this.pantallaJuego = pantallaJuego;
 	}
 
-	@Override
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		if (!this.resizeBackground){
-			this.background = resizeImage(this.getWidth(),this.getHeight(),this.background);
-			time.start();
-			this.resizeBackground = true;
-		}
-		paintBackground(g);
-		paintSpraits(g);
 
-	}
 
 
 	public void paintBackground(Graphics g) {
@@ -89,65 +57,29 @@ public class PanelJuego extends JPanel implements MouseListener, MouseMotionList
 			g.drawImage(this.squad.get(i).getLifeBar().getBf(),this.squad.get(i).getLifeBar().getX(),this.squad.get(i).getLifeBar().getY(), SpriteLife.MAX_WIDTH,SpriteLife.MAX_HEIGHT,null);
 		}
 		for (int i = 0; i <this.squad.size() ; i++) {
-			this.squad.get(i).walk();
+			this.squad.get(i).doAction(this.zergs);
 		}
 
 		this.jlPoints.setText("SPACEMARINS   ||||||||       Cristal: "+this.cristal+"    	    Soldiers : "+(this.squad.size()==SQUADPOS.length ? "MAX":this.squad.size()));
 		this.refreshTime++;
 	}
+	public void paintEnemies(Graphics graphics){
 
 
+		for (int i = 0; i < this.zergs.size(); i++) {
+			graphics.drawImage(this.zergs.get(i).getCanvas(), this.zergs.get(i).getX(), this.zergs.get(i).getY(), this.zergs.get(i).getWidth(), this.zergs.get(i).getHeight(), null);
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		if (SwingUtilities.isLeftMouseButton(e)){
-			if (cristal >= COST_MARINE){
-				this.squad.add(new Marine());
-				cristal-=COST_MARINE;
-			}
-		}else{
-			for (int i = 0; i < this.squad.size() ; i++) {
-				this.squad.get(i).setEndPoints(e.getX()+(int)SQUADPOS[i].getX(),e.getY()+(int)SQUADPOS[i].getY());
-			}
-
-			
 		}
-	}
-
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-
-	}
-
-	@Override
-	public void run() {
-		while (true){
-			repaint();
-			try {
-				Thread.sleep(25);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			Toolkit.getDefaultToolkit().sync();
+		for (int i = 0; i <this.zergs.size() ; i++) {
+			graphics.drawImage(this.zergs.get(i).getLifeBar().getBf(),this.zergs.get(i).getLifeBar().getX(),this.zergs.get(i).getLifeBar().getY(), SpriteLife.MAX_WIDTH,SpriteLife.MAX_HEIGHT,null);
+		}
+		for (int i = 0; i <this.zergs.size() ; i++) {
+				zergs.get(i).doAction(pantallaJuego.getWidth(),pantallaJuego.getHeight(),this.squad);
 		}
 
 	}
+
+
 
 	public BufferedImage chargeSprite(String resource){
 		BufferedImage bf = null;
@@ -176,7 +108,7 @@ public class PanelJuego extends JPanel implements MouseListener, MouseMotionList
 		settingsObject.fill = GridBagConstraints.BOTH;
 		JPanel panel = new JPanel();
 		panel.setOpaque(false);
-		add(panel,settingsObject);
+		pantallaJuego.add(panel,settingsObject);
 		settingsObject = new GridBagConstraints();
 		settingsObject.ipadx = 20;
 		settingsObject.gridx=0;
@@ -192,7 +124,7 @@ public class PanelJuego extends JPanel implements MouseListener, MouseMotionList
 		this.jlPoints.setOpaque(true);
 		this.jlPoints.setHorizontalAlignment(JLabel.CENTER);
 		this.jlPoints.setFont(new Font(Font.SANS_SERIF,Font.BOLD,18));
-		this.add(this.jlPoints,settingsObject);
+		pantallaJuego.add(this.jlPoints,settingsObject);
 	}
 	public BufferedImage resizeImage(int width,int height,BufferedImage img){
 		Image image  = img.getScaledInstance(width,height,0);
@@ -203,35 +135,109 @@ public class PanelJuego extends JPanel implements MouseListener, MouseMotionList
 		return bf;
 	}
 
-
-	@Override
-	public void componentResized(ComponentEvent e) {
-		this.background = resizeImage(this.getWidth(),this.getHeight(),this.background);
+	public void comprobarMuertos(){
+		for (int i = 0; i < this.zergs.size() ; i++) {
+				if (this.zergs.get(i).getState().equals("M")){
+					this.zergs.remove(i);
+					this.cristal+=10;
+				}
+		}
+		for (int i = 0; i <this.squad.size() ; i++) {
+				if (this.squad.get(i).getState().equals("M")){
+					this.squad.remove(i);
+				}
+		}
+	}
+	public void comprobarMuertesEnemigos(){
+		for (int i = 0; i <this.squad.size() ; i++) {
+			if (this.squad.get(i).getEnemy()!=null &&this.squad.get(i).getEnemy().getState().equals("M") ){
+				this.squad.get(i).setEnemy(null);
+			}
+		}
+		for (int i = 0; i <this.zergs.size() ; i++) {
+			if (this.zergs.get(i).getEnemy()!=null &&this.zergs.get(i).getEnemy().getState().equals("M") ){
+				this.zergs.get(i).setEnemy(null);
+			}
+		}
 	}
 
 	@Override
-	public void componentMoved(ComponentEvent e) {
+	public void startComponents() {
+		this.spritesVector = new MarineSprites(MAX_WIDTH,MAX_WIDTH);
+		Sprite.setMarineSprites(this.spritesVector);
+		this.squad = new ArrayList<>();
+		this.zergs = new ArrayList<>();
+
+		chargeImages();
+		this.cristal = 50;
+		this.seconds =0;
+		this.time  = new Timer(1000, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				seconds +=1;
+				if (seconds %5 == 0){
+					cristal++;
+				}
+				if (seconds%5 == 0){
+					for (int i = 0; i <seconds/5 ; i++) {
+						zergs.add(new Zerg(pantallaJuego.getWidth(),pantallaJuego.getHeight()));
+					}
+				}
+			}
+		});
+		this.refreshTime = 0;
+		this.resizeBackground = false;
+		pantallaJuego.setLayout(new GridBagLayout());
+		genComponents();
+		this.zergs.add(new Zerg(pantallaJuego.getWidth(),pantallaJuego.getHeight()));
 
 	}
 
 	@Override
-	public void componentShown(ComponentEvent e) {
+	public void paintElements(Graphics g) {
+		if (!this.resizeBackground){
+			this.background = resizeImage(pantallaJuego.getWidth(),pantallaJuego.getHeight(),this.background);
+			time.start();
+			this.resizeBackground = true;
+		}
+		paintBackground(g);
+		paintSpraits(g);
+		paintEnemies(g);
+		comprobarMuertesEnemigos();
+		comprobarMuertos();
 
 	}
 
 	@Override
-	public void componentHidden(ComponentEvent e) {
+	public void exeFrame() {
+		pantallaJuego.repaint();
+	}
+
+	@Override
+	public void mouseMove(MouseEvent e) {
 
 	}
 
 	@Override
-	public void mouseDragged(MouseEvent e) {
+	public void mouseClick(MouseEvent e) {
+		if (SwingUtilities.isLeftMouseButton(e)){
+			if (cristal >= COST_MARINE){
+				this.squad.add(new Marine());
+				cristal-=COST_MARINE;
+			}
+		}else{
+			for (int i = 0; i < this.squad.size() ; i++) {
+				if (!this.squad.get(i).getState().equals("M")){
+					this.squad.get(i).setEndPoints(e.getX()+(int)SQUADPOS[i].getX(),e.getY()+(int)SQUADPOS[i].getY());
+				}
+			}
 
+
+		}
 	}
 
 	@Override
-	public void mouseMoved(MouseEvent e) {
-
+	public void resizeScreen(ComponentEvent e) {
+		this.background = resizeImage(pantallaJuego.getWidth(),pantallaJuego.getHeight(),this.background);
 	}
-
 }

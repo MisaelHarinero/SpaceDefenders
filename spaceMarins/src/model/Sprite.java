@@ -1,15 +1,19 @@
 package model;
 
 import sprites.MarineSprites;
+import sprites.SpriteLife;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import static model.Marine.MAX_LIFE;
+
 public class Sprite {
     private final static int MAX_WIDTH_HEIGHT = 40;
     private final static int INITIAL_POINT_X = 500;
     private final static int INITIAL_POINT_Y = 500;
+    private final static int ATACK_RATIO = 100;
     private final static  int ACCEL = 1;
     private BufferedImage canvas;
     private int width;
@@ -23,12 +27,18 @@ public class Sprite {
     private int movement;
     private int xPointDestiny;
     private int yPointDestiny;
+    private Sprite enemy;
+    private String state;
+    private int life;
+    private SpriteLife lifeBar;
 
     public Sprite() {
         this.canvas = Sprite.getMarineSprites().getmSs();
         if (this.canvas == null){
             generarCuadradoNegro();
+
         }
+        state = "S";
         this.movement = 1;
         this.width = MAX_WIDTH_HEIGHT;
         this.height = MAX_WIDTH_HEIGHT;
@@ -38,10 +48,24 @@ public class Sprite {
         this.yPointDestiny = -1;
         this.xSpeed = ACCEL;
         this.ySpeed = ACCEL;
-
         this.colission = false;
     }
+    public Sprite(int num) {
+        this.canvas = Sprite.getMarineSprites().getmSs();
+        if (this.canvas == null){
+            generarCuadradoNegro();
 
+        }
+        state = "W";
+        this.movement = 2;
+        this.width = MAX_WIDTH_HEIGHT;
+        this.height = MAX_WIDTH_HEIGHT;
+        this.x = 10;
+        this.y = INITIAL_POINT_Y;
+        this.xSpeed = ACCEL;
+        this.ySpeed = ACCEL;
+        this.colission = false;
+    }
     public Sprite(BufferedImage img, int width, int height, int x, int y) {
         this.canvas = img;
         if (this.canvas == null){
@@ -114,22 +138,22 @@ public class Sprite {
     }
 
     public void move(int maxScreenWidth, int maxScreenHeight) {
-        if ((x + width) >= maxScreenWidth) {
+        if ((x + width) >= maxScreenWidth && this.xSpeed >=0) {
             this.xSpeed = -1 *  Math.abs(xSpeed);
         }
-        if (x <= 0) {
+        if (x <= 0 && this.xSpeed<=0) {
             this.xSpeed =  Math.abs(xSpeed);
         }
 
-        if (y + height >= maxScreenHeight) {
+        if (y + height >= maxScreenHeight && this.ySpeed >=0) {
             this.ySpeed = -1 *  Math.abs(ySpeed);
         }
-        if (y <= 0) {
+        if (y <= 0 && this.ySpeed<=0) {
             this.ySpeed =  Math.abs(ySpeed);
         }
         this.x += this.xSpeed;
         this.y += this.ySpeed;
-
+        this.getLifeBar().actualizarCordenadas(getX(),getY());
     }
 
 
@@ -248,6 +272,9 @@ public class Sprite {
             yPointDestiny = -1;
             ySpeed = 0;
         }
+        if (yPointDestiny == -1 && xPointDestiny == -1){
+            this.state = "S";
+        }
 
     }
     public void setEndPoints(int xEnd,int yEnd){
@@ -263,6 +290,7 @@ public class Sprite {
         }else {
             ySpeed = Math.abs(ACCEL);
         }
+        this.state = "W";
 
 
     }
@@ -282,4 +310,61 @@ public class Sprite {
     public void setyPointDestiny(int yPointDestiny) {
         this.yPointDestiny = yPointDestiny;
     }
+
+
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public Sprite getEnemy() {
+        return enemy;
+    }
+
+    public void setEnemy(Sprite enemy) {
+        this.enemy = enemy;
+    }
+    public int getLife() {
+        return life;
+    }
+
+    public void setLife(int life) {
+        this.life = life;
+    }
+
+    public SpriteLife getLifeBar() {
+        return lifeBar;
+    }
+
+    public void setLifeBar(SpriteLife lifeBar) {
+        this.lifeBar = lifeBar;
+    }
+
+    public void atackEnemy(){
+        if (enemy != null){
+            if (this.enemy.getState().equals("M")){
+                this.enemy = null;
+                this.state = "S";
+
+            }else {
+                if (this.enemy.getLife() <= 0 && !enemy.getState().equals("M")) {
+                    this.enemy.setState("M");
+                    this.state = "S";
+                    this.enemy = null;
+                } else {
+                  if (!enemy.getState().equals("B")){
+                      this.enemy.setLife(this.enemy.getLife() - 1);
+                  }
+                }
+            }
+        }else{
+            state = "S";
+        }
+
+    }
+
 }

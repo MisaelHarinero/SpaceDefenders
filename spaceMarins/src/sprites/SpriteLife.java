@@ -44,7 +44,10 @@ public class SpriteLife {
         this.x = x+3;
         this.y = y-3;
     }
-
+    public void recibirDaño(int life){
+        this.life = life;
+        genBuffer();
+    }
     public int getX() {
         return x;
     }
@@ -68,4 +71,5 @@ public class SpriteLife {
     public void setBf(BufferedImage bf) {
         this.bf = bf;
     }
+
 }

@@ -6,20 +6,21 @@ import java.util.ArrayList;
 
 public class Marine extends  Sprite {
     public final static int MAX_LIFE = 20;
-    private int life;
-    private SpriteLife lifeBar;
-    private final static int ATACK_RATIO = 50;
+    private int timeRecharge;
+    private final static int  TIME_RECHARGE = 5;
+    private final static int ATACK_RATIO = 100;
+
     public Marine() {
         super();
-        this.life = MAX_LIFE;
-        this.lifeBar = new SpriteLife(this.life,getX(),getY());
+        setLife(400);
+        setLifeBar(new SpriteLife(getLife()/20,getX(),getY()));
     }
 
     @Override
     public void walk() {
         super.walk();
         setSpritesForMovement();
-        this.lifeBar.actualizarCordenadas(getX(),getY());
+        this.getLifeBar().actualizarCordenadas(getX(),getY());
     }
 
     public  void setSpritesForMovement(){
@@ -98,28 +99,87 @@ public class Marine extends  Sprite {
     public void acctions() {
 
     }
+    public void changeCombatSprite(){
+        if (getX()>getEnemy().getX() && getY()> getEnemy().getY()){
+            setCanvas(getMarineSprites().getmQp());
+        }
+        if (getX()>getEnemy().getX() && getY()== getEnemy().getY()){
+            setCanvas(getMarineSprites().getmAp());
+        }
+        if (getX()>getEnemy().getX() && getY()< getEnemy().getY()){
+            setCanvas(getMarineSprites().getmZp());
+        }
+        if (getX()==getEnemy().getX() && getY()<getEnemy().getY()){
+            setCanvas(getMarineSprites().getmWp());
+        }
+        if (getX()==getEnemy().getX() && getY()>getEnemy().getY()){
+            setCanvas(getMarineSprites().getmSp());
+        }
+        if (getX()<getEnemy().getX() && getY()==getEnemy().getY()){
+            setCanvas(getMarineSprites().getmDp());
+        }
+        if (getX()<getEnemy().getX() && getY()>getEnemy().getY()){
+            setCanvas(getMarineSprites().getmEp());
+        }
+        if (getX()<getEnemy().getX() && getY()<getEnemy().getY()){
+            setCanvas(getMarineSprites().getmXp());
+        }
 
-    public int getLife() {
-        return life;
-    }
-
-    public void setLife(int life) {
-        this.life = life;
-    }
-
-    public SpriteLife getLifeBar() {
-        return lifeBar;
-    }
-
-    public void setLifeBar(SpriteLife lifeBar) {
-        this.lifeBar = lifeBar;
     }
     public void searchEnemy(ArrayList<Zerg>enemies){
         for (int i = 0; i < enemies.size(); i++) {
 
             if (Math.abs(getX()-enemies.get(i).getX())<ATACK_RATIO && Math.abs(getY()-enemies.get(i).getY())<ATACK_RATIO){
-
+                if (getEnemy() == null&&!enemies.get(i).getState().equals("M")){
+                    setState("A");
+                    setEnemy(enemies.get(i));
+                    getEnemy().setState("A");
+                    changeCombatSprite();
+                }
             }
         }
     }
+    public void doAction(ArrayList<Zerg> enemies){
+        switch (getState()){
+            case "S":{
+                setEnemy(null);
+                setCanvas(getMarineSprites().getmSs());
+                searchEnemy(enemies);
+                break;
+            }
+            case "W":{
+                walk();
+                searchEnemy(enemies);
+                break;
+            }
+            case "A":{
+                if (timeRecharge == -1){
+                    getLifeBar().recibirDaño(this.getLife()/20);
+                    atackEnemy();
+                }else{
+                    setState("R");
+                    timeRecharge = 0;
+                }
+                break;
+            }
+            case "R":{
+                if (timeRecharge>=0 &&timeRecharge<5){
+                        timeRecharge++;
+                    getLifeBar().recibirDaño(this.getLife()/20);
+
+                }else{
+                    timeRecharge = -1;
+                    setState("A");
+                }
+            }
+            case "M":{
+                break;
+            }
+        }
+
+
+    }
+
+
+
 }
