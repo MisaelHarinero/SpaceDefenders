@@ -2,12 +2,11 @@ package model;
 
 import sprites.MarineSprites;
 import sprites.SpriteLife;
+import sprites.ZergsSprites;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-
-import static model.Marine.MAX_LIFE;
 
 public class Sprite {
     private final static int MAX_WIDTH_HEIGHT = 40;
@@ -23,6 +22,7 @@ public class Sprite {
     private int xSpeed;
     private int ySpeed;
     private static  MarineSprites marineSprites;
+    private static ZergsSprites zergSprites;
     private boolean colission;
     private int movement;
     private int xPointDestiny;
@@ -50,8 +50,8 @@ public class Sprite {
         this.ySpeed = ACCEL;
         this.colission = false;
     }
-    public Sprite(int num) {
-        this.canvas = Sprite.getMarineSprites().getmSs();
+    public Sprite(int xFinally, int yFinally, int maxWith, int maxHeight,int num) {
+        this.canvas = Sprite.getZergSprites().getImages()[8][0];
         if (this.canvas == null){
             generarCuadradoNegro();
 
@@ -60,10 +60,10 @@ public class Sprite {
         this.movement = 2;
         this.width = MAX_WIDTH_HEIGHT;
         this.height = MAX_WIDTH_HEIGHT;
-        this.x = 10;
-        this.y = INITIAL_POINT_Y;
+        pointStart(maxWith, maxHeight);
         this.xSpeed = ACCEL;
         this.ySpeed = ACCEL;
+        setEndPoints(xFinally,yFinally);
         this.colission = false;
     }
     public Sprite(BufferedImage img, int width, int height, int x, int y) {
@@ -71,6 +71,15 @@ public class Sprite {
         if (this.canvas == null){
             generarCuadradoNegro();
         }
+        this.height = height;
+        this.width = width;
+        this.x = x;
+        this.y = y;
+
+
+    }
+    public Sprite( int width, int height, int x, int y) {
+        this.canvas = null;
         this.height = height;
         this.width = width;
         this.x = x;
@@ -138,21 +147,20 @@ public class Sprite {
     }
 
     public void move(int maxScreenWidth, int maxScreenHeight) {
-        if ((x + width) >= maxScreenWidth && this.xSpeed >=0) {
-            this.xSpeed = -1 *  Math.abs(xSpeed);
+        if (x != xPointDestiny && xPointDestiny !=-1){
+            x+= xSpeed;
+        }else{
+            xPointDestiny = -1;
+            xSpeed=0;
         }
-        if (x <= 0 && this.xSpeed<=0) {
-            this.xSpeed =  Math.abs(xSpeed);
+        if (y != yPointDestiny && yPointDestiny != -1){
+            y+=ySpeed;
+        }else{
+            yPointDestiny = -1;
+            ySpeed = 0;
         }
-
-        if (y + height >= maxScreenHeight && this.ySpeed >=0) {
-            this.ySpeed = -1 *  Math.abs(ySpeed);
+        if (yPointDestiny == -1 && xPointDestiny == -1){
         }
-        if (y <= 0 && this.ySpeed<=0) {
-            this.ySpeed =  Math.abs(ySpeed);
-        }
-        this.x += this.xSpeed;
-        this.y += this.ySpeed;
         this.getLifeBar().actualizarCordenadas(getX(),getY());
     }
 
@@ -185,62 +193,7 @@ public class Sprite {
         this.movement = movement;
     }
 
-    public static void comprobarSprites(ArrayList<Sprite> sprites) {
-        int speedAuxX = 0;
-        int speedAuxY = 0;
-        ArrayList<Integer> post = new ArrayList<>();
-        for (int i = 0; i < sprites.size(); i++) {
-            for (int j = 0; j < sprites.size(); j++) {
-                if (i != j) {
-                    if (sprites.get(i)!=null&&sprites.get(j)!=null) {
 
-                        if (((sprites.get(i).getX() + sprites.get(i).getWidth()) > (sprites.get(j).getX())) && (sprites.get(j).getX() >= (sprites.get(i).getX()))
-                                && ((sprites.get(i).getY() + sprites.get(i).getHeight()) > (sprites.get(j).getY())) && (sprites.get(j).getY() >= (sprites.get(i).getY()))) {
-                                   if (!sprites.get(i).isColission()&&!sprites.get(j).isColission()){
-                                       if ((sprites.get(i).getxSpeed()>0 && sprites.get(j).getxSpeed()>0) ||(sprites.get(i).getxSpeed()<0 && sprites.get(j).getxSpeed()<0)
-                                               || (sprites.get(i).getySpeed()>0 && sprites.get(j).getySpeed()>0)||(sprites.get(i).getySpeed()<0 && sprites.get(j).getySpeed()<0)){
-
-                                           speedAuxX = sprites.get(i).getxSpeed();
-                                           speedAuxY = sprites.get(i).getySpeed();
-                                           sprites.get(i).setxSpeed(sprites.get(j).getxSpeed());
-                                           sprites.get(i).setySpeed(sprites.get(j).getySpeed());
-                                           sprites.get(j).setxSpeed(speedAuxX);
-                                           sprites.get(j).setySpeed(speedAuxY);
-
-                                       }else{
-                                           sprites.get(j).setxSpeed(0-sprites.get(j).getxSpeed());
-                                           sprites.get(j).setySpeed(0-sprites.get(j).getySpeed());
-                                           sprites.get(i).setxSpeed(0-sprites.get(i).getxSpeed());
-                                           sprites.get(i).setySpeed(0-sprites.get(i).getySpeed());
-                                       }
-                                       sprites.get(i).setColission(true);
-                                       sprites.get(j).setColission(true);
-                                   }else{
-                                       sprites.get(i).setColission(false);
-                                       sprites.get(j).setColission(false);
-
-                                   }
-
-
-                        }else{
-                            if (sprites.get(i).isColission()&&sprites.get(j).isColission()){
-                                sprites.get(i).setColission(false);
-                                sprites.get(j).setColission(false);
-                            }
-
-                        }
-                    }
-
-
-                }
-
-            }
-
-
-        }
-
-
-    }
 
     public static MarineSprites getMarineSprites() {
         return marineSprites;
@@ -367,4 +320,39 @@ public class Sprite {
 
     }
 
+    public static ZergsSprites getZergSprites() {
+        return zergSprites;
+    }
+
+    public static void setZergSprites(ZergsSprites zergSprites) {
+        Sprite.zergSprites = zergSprites;
+    }
+
+    public void pointStart(int maxWith, int maxHeight) {
+        switch ((int) Math.floor(Math.random() * 4)) {
+            case 0: {
+                setX((int) Math.floor(Math.random() * (maxWith-10)));
+                setY(10);
+                break;
+            }
+            case 1: {
+                setX((int) Math.floor(Math.random() * maxWith));
+                setY(maxHeight-10);
+                break;
+            }
+            case 2: {
+                setX(10);
+                setY((int) Math.floor(Math.random() * (maxWith-10)));
+
+                break;
+            }
+            case 3: {
+                setX(maxWith-10);
+                setY((int) Math.floor(Math.random() * (maxWith-10)));
+
+
+                break;
+            }
+        }
+    }
 }

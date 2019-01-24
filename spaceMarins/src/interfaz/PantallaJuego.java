@@ -4,15 +4,19 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class PantallaJuego extends JPanel implements MouseListener, MouseMotionListener, Runnable, ComponentListener {
+public class PantallaJuego extends JPanel implements MouseListener, MouseMotionListener, Runnable, ComponentListener, KeyListener {
 
     private IGameScreen gameScreen;
+    private JFrame ventana;
 
 
-    public PantallaJuego() {
+    public PantallaJuego(JFrame ventana) {
 
-        this.gameScreen = new PanelJuego(this);
+        this.gameScreen = new InitialScreen(this);
         this.gameScreen.startComponents();
+        this.setFocusable(true);
+        this.ventana = ventana;
+        this.addKeyListener(this);
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         this.addComponentListener(this);
@@ -92,5 +96,29 @@ public class PantallaJuego extends JPanel implements MouseListener, MouseMotionL
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        this.gameScreen.onKeyPress(e);
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+    }
+
+    public IGameScreen getGameScreen() {
+        return gameScreen;
+    }
+
+    public void setGameScreen(IGameScreen gameScreen) {
+        this.gameScreen = gameScreen;
+    }
+    public void exit(){
+        this.ventana.dispose();
     }
 }

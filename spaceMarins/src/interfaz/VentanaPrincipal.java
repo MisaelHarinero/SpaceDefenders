@@ -20,7 +20,7 @@ public class VentanaPrincipal {
 	}
 
 	public void incializarComponentes() {
-		this.panel = new PantallaJuego();
+		this.panel = new PantallaJuego(this.ventana);
 		this.ventana.add(this.panel);
 	}
 }

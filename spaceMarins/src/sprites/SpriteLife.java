@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
 
 public class SpriteLife {
     public final static int MAX_HEIGHT = 4;
-    public final static int MAX_WIDTH = 24;
+    public final static int MAX_WIDTH = 20;
     private final static Color BASE_COLOR = Color.BLACK;
     private final static Color MID_LIFE_COLOR = Color.ORANGE;
     private final static Color HEALTH_COLOR = Color.RED;
@@ -36,7 +36,7 @@ public class SpriteLife {
                graphics.setColor(HEALTH_COLOR);
            }
        }
-        graphics.fillRect(2,1,life,2);
+        graphics.fillRect(0,1,life,2);
         graphics.dispose();
 
     }
@@ -72,4 +72,11 @@ public class SpriteLife {
         this.bf = bf;
     }
 
+    public int getLife() {
+        return life;
+    }
+
+    public void setLife(int life) {
+        this.life = life;
+    }
 }

@@ -1,39 +1,57 @@
 package interfaz;
 
+import model.Base;
 import model.Marine;
 import model.Sprite;
 import model.Zerg;
 import sprites.MarineSprites;
 import sprites.SpriteLife;
+import sprites.ZergsSprites;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 
 public class PanelJuego implements IGameScreen {
-	private ArrayList<Marine> squad;
 	private final static int MAX_WIDTH = 40;
 	private final static int INVULNERABILITY = 20;
-	private double seconds;
+
+	private int seconds;
 	private JLabel jlPoints;
-	private BufferedImage asteroid;
 	private Timer time;
 	private BufferedImage background;
 	private int cristal;
 	private MarineSprites spritesVector;
 	private boolean resizeBackground;
 	private ArrayList<Zerg>zergs;
+	private int zergsDie;
+	private int squadSelected;
+	private boolean gameOver;
+	private Base  base;
+	/**
+	 * Cuenta atras para cambiar de Ronda
+	 */
+	private final static int TIME_BETWEEN_ROUNDS = 10;
+	private int cuentaAtrasRonda;
+	/**
+	 * Array  de ArrayList de Marines que nos permite controlar diferentes stats
+	 */
+	private ArrayList<Marine> squads [];
+	private final static int MAX_SQUAD = 4;
 	private final static int COST_MARINE = 10;
+
+	/**
+	 * Numero de la ronda
+	 */
+	private  int round;
 	private final static  Point SQUADPOS [] = {new Point(0,0),new Point(10,-10),new Point(10,10),new Point(-10,10),new Point(-10,-10),new Point(20,-20),new Point(20,20),new Point(-20,20),new Point(-20,-20)
 			,new Point(30,-30),new Point(30,30),new Point(-30,30),new Point(-30,-30)};
+	private final static int ROUNDS_NUMBER [] = {5,10,15,20,30};
 	private int refreshTime;
 	private PantallaJuego pantallaJuego;
 	public PanelJuego(PantallaJuego pantallaJuego) {
@@ -50,17 +68,24 @@ public class PanelJuego implements IGameScreen {
 		if (this.refreshTime>=INVULNERABILITY){
 			//Sprite.comprobarSprites(this.squad);
 		}
-		for (int i = 0; i <this.squad.size() ; i++) {
-			g.drawImage(this.squad.get(i).getCanvas(), this.squad.get(i).getX(), this.squad.get(i).getY(), this.squad.get(i).getWidth(), this.squad.get(i).getHeight(), null);
+		for (int i = 0; i <this.squads.length ; i++) {
+			for (int j = 0; j <this.squads[i].size() ; j++) {
+				g.drawImage(this.squads[i].get(j).getCanvas(), this.squads[i].get(j).getX(), this.squads[i].get(j).getY(), this.squads[i].get(j).getWidth(), this.squads[i].get(j).getHeight(), null);
+
+			}
 		}
-		for (int i = 0; i <this.squad.size() ; i++) {
-			g.drawImage(this.squad.get(i).getLifeBar().getBf(),this.squad.get(i).getLifeBar().getX(),this.squad.get(i).getLifeBar().getY(), SpriteLife.MAX_WIDTH,SpriteLife.MAX_HEIGHT,null);
+		for (int i = 0; i <this.squads.length ; i++) {
+			for (int j = 0; j <this.squads[i].size() ; j++) {
+				g.drawImage(this.squads[i].get(j).getLifeBar().getBf(),this.squads[i].get(j).getLifeBar().getX(),this.squads[i].get(j).getLifeBar().getY(), SpriteLife.MAX_WIDTH,SpriteLife.MAX_HEIGHT,null);
+			}
 		}
-		for (int i = 0; i <this.squad.size() ; i++) {
-			this.squad.get(i).doAction(this.zergs);
+		for (int i = 0; i <this.squads.length ; i++) {
+			for (int j = 0; j <this.squads[i].size() ; j++) {
+				this.squads[i].get(j).doAction(this.zergs);
+			}
 		}
 
-		this.jlPoints.setText("SPACEMARINS   ||||||||       Cristal: "+this.cristal+"    	    Soldiers : "+(this.squad.size()==SQUADPOS.length ? "MAX":this.squad.size()));
+		this.jlPoints.setText("SPACEMARINS   ||||||||       Cristal: "+this.cristal+"    	    Soldiers : "+(this.squads[this.squadSelected].size()==SQUADPOS.length ? "MAX":this.squads[this.squadSelected].size())+"      |||||      SQUAD_SELECTED : "+(this.squadSelected != -1? this.squadSelected+1 :" NONE"));
 		this.refreshTime++;
 	}
 	public void paintEnemies(Graphics graphics){
@@ -74,7 +99,7 @@ public class PanelJuego implements IGameScreen {
 			graphics.drawImage(this.zergs.get(i).getLifeBar().getBf(),this.zergs.get(i).getLifeBar().getX(),this.zergs.get(i).getLifeBar().getY(), SpriteLife.MAX_WIDTH,SpriteLife.MAX_HEIGHT,null);
 		}
 		for (int i = 0; i <this.zergs.size() ; i++) {
-				zergs.get(i).doAction(pantallaJuego.getWidth(),pantallaJuego.getHeight(),this.squad);
+				zergs.get(i).doAction(pantallaJuego.getWidth(),pantallaJuego.getHeight(),this.squads);
 		}
 
 	}
@@ -95,7 +120,6 @@ public class PanelJuego implements IGameScreen {
 	}
 	public void chargeImages(){
 		this.background = chargeSprite("resource/background.jpg");
-		this.asteroid = this.spritesVector.getmDp();
 
 
 	}
@@ -140,18 +164,36 @@ public class PanelJuego implements IGameScreen {
 				if (this.zergs.get(i).getState().equals("M")){
 					this.zergs.remove(i);
 					this.cristal+=10;
+					this.zergsDie++;
 				}
 		}
-		for (int i = 0; i <this.squad.size() ; i++) {
-				if (this.squad.get(i).getState().equals("M")){
-					this.squad.remove(i);
+		for (int i = 0; i <this.squads.length ; i++) {
+			for (int j = 0; j < this.squads[i].size(); j++) {
+				if (this.squads[i].get(j).getState().equals("M")){
+					this.squads[i].remove(j);
 				}
+			}
+		}
+	}
+	public void paintBase(Graphics graphics){
+		graphics.drawImage(base.getCanvas(),base.getX(),base.getY(),base.getWidth(),base.getHeight(),null);
+		graphics.drawImage(base.getLifeBar().getBf(),base.getLifeBar().getX(),base.getLifeBar().getY(),base.getWidth(),SpriteLife.MAX_HEIGHT,null);
+		this.gameOver = base.doACtion();
+		if (this.gameOver){
+			this.pantallaJuego.removeAll();
+			LooseScreen looseScreen = new LooseScreen(this.pantallaJuego);
+			looseScreen.startComponents();
+			this.time.stop();
+			this.pantallaJuego.setGameScreen(looseScreen);
 		}
 	}
 	public void comprobarMuertesEnemigos(){
-		for (int i = 0; i <this.squad.size() ; i++) {
-			if (this.squad.get(i).getEnemy()!=null &&this.squad.get(i).getEnemy().getState().equals("M") ){
-				this.squad.get(i).setEnemy(null);
+
+		for (int i = 0; i <this.squads.length ; i++) {
+			for (int j = 0; j < this.squads[i].size(); j++) {
+				if (this.squads[i].get(j).getEnemy()!=null &&this.squads[i].get(j).getEnemy().getState().equals("M") ){
+					this.squads[i].get(j).setEnemy(null);
+				}
 			}
 		}
 		for (int i = 0; i <this.zergs.size() ; i++) {
@@ -165,9 +207,17 @@ public class PanelJuego implements IGameScreen {
 	public void startComponents() {
 		this.spritesVector = new MarineSprites(MAX_WIDTH,MAX_WIDTH);
 		Sprite.setMarineSprites(this.spritesVector);
-		this.squad = new ArrayList<>();
+		Sprite.setZergSprites(new ZergsSprites());
+		this.squads  = new ArrayList [4];
+		for (int i = 0; i <squads.length ; i++) {
+			this.squads[i] = new ArrayList<>();
+		}
+		this.base = new Base(pantallaJuego.getWidth()/2,pantallaJuego.getHeight()/2);
 		this.zergs = new ArrayList<>();
-
+		this.zergsDie = 0;
+		this.round = -1;
+		this.gameOver = false;
+		this.squadSelected  = 0;
 		chargeImages();
 		this.cristal = 50;
 		this.seconds =0;
@@ -175,12 +225,15 @@ public class PanelJuego implements IGameScreen {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				seconds +=1;
+				if (base.getSecondsConstruction()>=0){
+					base.setSecondsConstruction(base.getSecondsConstruction()-1);
+				}
 				if (seconds %5 == 0){
 					cristal++;
 				}
-				if (seconds%5 == 0){
-					for (int i = 0; i <seconds/5 ; i++) {
-						zergs.add(new Zerg(pantallaJuego.getWidth(),pantallaJuego.getHeight()));
+				if ( base.getSecondsConstruction()<0){
+					if (cuentaAtrasRonda >=0){
+						cuentaAtrasRonda--;
 					}
 				}
 			}
@@ -189,8 +242,6 @@ public class PanelJuego implements IGameScreen {
 		this.resizeBackground = false;
 		pantallaJuego.setLayout(new GridBagLayout());
 		genComponents();
-		this.zergs.add(new Zerg(pantallaJuego.getWidth(),pantallaJuego.getHeight()));
-
 	}
 
 	@Override
@@ -201,10 +252,14 @@ public class PanelJuego implements IGameScreen {
 			this.resizeBackground = true;
 		}
 		paintBackground(g);
+		paintBase(g);
 		paintSpraits(g);
 		paintEnemies(g);
 		comprobarMuertesEnemigos();
 		comprobarMuertos();
+		if (base.getSecondsConstruction()<0){
+			comprobarWin();
+		}
 
 	}
 
@@ -222,16 +277,18 @@ public class PanelJuego implements IGameScreen {
 	public void mouseClick(MouseEvent e) {
 		if (SwingUtilities.isLeftMouseButton(e)){
 			if (cristal >= COST_MARINE){
-				this.squad.add(new Marine());
-				cristal-=COST_MARINE;
-			}
-		}else{
-			for (int i = 0; i < this.squad.size() ; i++) {
-				if (!this.squad.get(i).getState().equals("M")){
-					this.squad.get(i).setEndPoints(e.getX()+(int)SQUADPOS[i].getX(),e.getY()+(int)SQUADPOS[i].getY());
+				if (this.squadSelected != -1 && this.squads[this.squadSelected].size()<=SQUADPOS.length){
+					this.squads [this.squadSelected].add(new Marine());
+					cristal-=COST_MARINE;
 				}
 			}
+		}else{
+			for (int i = 0; i < this.squads[this.squadSelected].size() ; i++) {
 
+				if (!this.squads[this.squadSelected].get(i).getState().equals("M")){
+					this.squads[this.squadSelected].get(i).setEndPoints(e.getX()+(int)SQUADPOS[i].getX(),e.getY()+(int)SQUADPOS[i].getY());
+				}
+			}
 
 		}
 	}
@@ -239,5 +296,51 @@ public class PanelJuego implements IGameScreen {
 	@Override
 	public void resizeScreen(ComponentEvent e) {
 		this.background = resizeImage(pantallaJuego.getWidth(),pantallaJuego.getHeight(),this.background);
+	}
+
+	@Override
+	public void onKeyPress(KeyEvent e) {
+		switch (e.getKeyCode()){
+			case KeyEvent.VK_1:{
+				this.squadSelected = 0;
+				break;
+			}
+			case KeyEvent.VK_2:{
+				this.squadSelected = 1;
+
+				break;
+			}
+			case KeyEvent.VK_3:{
+				this.squadSelected = 2;
+				break;
+			}
+			case KeyEvent.VK_4:{
+				this.squadSelected = 3;
+
+				break;
+			}
+		}
+	}
+	public void comprobarWin(){
+		if (this.zergs.size()==0 && cuentaAtrasRonda<0){
+			this.round++;
+			System.out.println(round);
+			cuentaAtrasRonda=TIME_BETWEEN_ROUNDS;
+		}
+		if (this.round >= ROUNDS_NUMBER.length){
+			WinScreen winScreen = new WinScreen(this.pantallaJuego);
+			winScreen.startComponents();
+			this.time.stop();
+			this.pantallaJuego.setGameScreen(winScreen);
+		}else{
+			if (cuentaAtrasRonda ==0){
+
+				for (int i = 0; i < ROUNDS_NUMBER[round] ; i++) {
+					this.zergs.add(new Zerg(pantallaJuego.getWidth(),pantallaJuego.getHeight(),base));
+				}
+				cuentaAtrasRonda = -1;
+			}
+
+		}
 	}
 }
