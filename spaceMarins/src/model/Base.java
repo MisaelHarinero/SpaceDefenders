@@ -5,6 +5,11 @@ import sprites.SpriteLife;
 
 import java.awt.image.BufferedImage;
 
+/**
+ * @author Misael Harinero
+ * Clase que hereda de de Sprite, que actuara como base zeg que nuestros marines espaciales deberan
+ * proteger con su vida
+ */
 public class Base extends Sprite {
     private  BaseSprites spriteBase;
     private  final static int DIMENSION = 200;
@@ -18,6 +23,10 @@ public class Base extends Sprite {
         setLife(4000);
         setLifeBar(new SpriteLife(getLife()/1000,getX(),getY()));
     }
+
+    /**
+     * Metodo en el que cargamos los sprites de construccion de la base para simular que esta se esta construyendo
+     */
     public void changeSpriteBase(){
         switch (secondsConstruction){
             case 10:{
@@ -55,6 +64,11 @@ public class Base extends Sprite {
 
         }
     }
+
+    /**
+     * Comprobamos si nos estamos construyendo y actualizamos la barra de vida
+     * @return : boolean Retorna true si nos han destruido nuestra base
+     */
     public boolean doACtion(){
         if (secondsConstruction >=0){
             changeSpriteBase();

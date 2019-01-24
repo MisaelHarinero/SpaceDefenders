@@ -4,15 +4,28 @@ import sprites.SpriteLife;
 
 import java.util.ArrayList;
 
+/**
+ * @author Misael Harinero
+ * Clase que hereda de de Sprite, y que modifica sus atributos para actuar como un Marine Espacial
+ * En la que tenemos una tabla de estados dependiendo de los estados realizara una accion :
+ *     TABLA DE ACCION :
+ *   -----------------------
+ *      W    |    Cuando se encuentra en estado W nuestro personaje se mueve
+ *      S    |    Cuando se encuentra en estado S nuestro personaje se queda parado en el sitio
+ *      A    |    Cuadno se encuentra en estado A nuestro personaje esta atacando
+ *      M    |    Cuando se encuentra en estado M nuestro personaje esta muerto
+ *      R    |    Cuando se encuentra en estad  R nuestro personaje esta recargando
+ *
+ */
 public class Marine extends  Sprite {
-    public final static int MAX_LIFE = 20;
+    public final static int MAX_LIFE = 400;
     private int timeRecharge;
     private final static int  TIME_RECHARGE = 5;
     private final static int ATACK_RATIO = 100;
 
     public Marine() {
         super();
-        setLife(400);
+        setLife(MAX_LIFE);
         setLifeBar(new SpriteLife(getLife()/20,getX(),getY()));
     }
 
@@ -23,6 +36,9 @@ public class Marine extends  Sprite {
         this.getLifeBar().actualizarCordenadas(getX(),getY());
     }
 
+    /**
+     * Metodo en el sprite de movimiento de nuestro zerg dependiendo de su velocidad y de su paso
+     */
     public  void setSpritesForMovement(){
         if (getxPointDestiny() == -1 && getyPointDestiny() ==-1){
                 setCanvas(getMarineSprites().getmSs());
@@ -96,9 +112,10 @@ public class Marine extends  Sprite {
         changeSprite();
 
     }
-    public void acctions() {
 
-    }
+    /**
+     * Metodo en elque dependiendo de la direccion de nuestro enemigo modificamos el sprite de ataque de un sitio a otro
+     */
     public void changeCombatSprite(){
         if (getX()>getEnemy().getX() && getY()> getEnemy().getY()){
             setCanvas(getMarineSprites().getmQp());
@@ -126,6 +143,10 @@ public class Marine extends  Sprite {
         }
 
     }
+
+    /**
+     * MEtodo en el que comprobamos si nuestro zerg esta en rango de atacar a un enemigo o no
+     */
     public void searchEnemy(ArrayList<Zerg>enemies){
         for (int i = 0; i < enemies.size(); i++) {
 
@@ -139,6 +160,11 @@ public class Marine extends  Sprite {
             }
         }
     }
+
+    /**
+     * Metodo en el que dependiendo en que estado se encuentre nuestro personaje realizara una accion u otra
+     * @param enemies
+     */
     public void doAction(ArrayList<Zerg> enemies){
         switch (getState()){
             case "S":{
@@ -163,7 +189,7 @@ public class Marine extends  Sprite {
                 break;
             }
             case "R":{
-                if (timeRecharge>=0 &&timeRecharge<5){
+                if (timeRecharge>=0 &&timeRecharge<TIME_RECHARGE){
                         timeRecharge++;
                     getLifeBar().recibirDaño(this.getLife()/20);
 

@@ -8,6 +8,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+/**
+ * @author Misael Harinero
+ * Clase que nos permite generar un dibujo en un panel en la cual le podemos dar cordenadas asi como animarlo para
+ * que este se mueva solo y pueda luchar contra otros Sprites.
+ */
 public class Sprite {
     private final static int MAX_WIDTH_HEIGHT = 40;
     private final static int INITIAL_POINT_X = 500;
@@ -146,6 +151,11 @@ public class Sprite {
         this.ySpeed = ySpeed;
     }
 
+    /**
+     * Funciona de manera muy similar a walk()
+     * @param maxScreenWidth
+     * @param maxScreenHeight
+     */
     public void move(int maxScreenWidth, int maxScreenHeight) {
         if (x != xPointDestiny && xPointDestiny !=-1){
             x+= xSpeed;
@@ -204,6 +214,10 @@ public class Sprite {
     }
 
 
+    /**
+     * Sistema de movimiento de 10 frames en 10 frames para contar el numero de frames para cambiar el sprite y asi simular una animacion
+     * de caminar
+     */
     public void changeSprite(){
         if (movement >= 1&&movement!=10){
             movement ++;
@@ -212,6 +226,13 @@ public class Sprite {
             movement =1;
         }
     }
+
+    /**
+     * Metodo en el que nuestro sprite camina hasta el punto de destino,  comprobamos las cordenadas
+     * primero que no nos hayamos pasado de la de destino vamos aumentando y aumentando las cordenadas hasta llegar a la de destino,
+     * una vez en la de destino la velocidad tanto de x como de y se pone a 0, si una de las cordenadas deseadas se llega antes de la otra,
+     * esa velocidad se pone a 0 pero la otra continua hasta llegar a la cordenada exacta
+     */
     public  void walk(){
         if (x != xPointDestiny && xPointDestiny !=-1){
             x+= xSpeed;
@@ -230,6 +251,12 @@ public class Sprite {
         }
 
     }
+
+    /**
+     * Le pasamos unas cordenadas de destino, y respecto esas cordenadas calculamos cual seria la velocidad para llegar al punto deseado
+     * @param xEnd
+     * @param yEnd
+     */
     public void setEndPoints(int xEnd,int yEnd){
         this.xPointDestiny = xEnd;
         this.yPointDestiny = yEnd;
@@ -297,6 +324,11 @@ public class Sprite {
         this.lifeBar = lifeBar;
     }
 
+    /**
+     * Metodo en el que un sprite a taca a su enemigo en el caso de que este no sea nulo, luego comprobamos si tiene la etiqueta de muerto,
+     * si es asi lo ponemos a null, luego  si la vida es 0 o menor y no esta muerto lo ponemos a muerto, y si no esta muerto, y no esta en
+     * habilidad realizamos el ataque y disminuimos en uno su vida
+     */
     public void atackEnemy(){
         if (enemy != null){
             if (this.enemy.getState().equals("M")){
@@ -328,6 +360,11 @@ public class Sprite {
         Sprite.zergSprites = zergSprites;
     }
 
+    /**
+     * Metodo en el que generamos un punto aleatorio entre los extremos de nuestra ventana para generar ahi sprites
+     * @param maxWith
+     * @param maxHeight
+     */
     public void pointStart(int maxWith, int maxHeight) {
         switch ((int) Math.floor(Math.random() * 4)) {
             case 0: {

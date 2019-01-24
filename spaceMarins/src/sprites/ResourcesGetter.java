@@ -5,6 +5,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * @author Misael Harinero
+ * Clase en la cual cargamos todas las imagenes necesarias para las pantallas de inicio y fin de juego
+ */
 public class ResourcesGetter {
     private static BufferedImage backInit;
     private static BufferedImage backWin;

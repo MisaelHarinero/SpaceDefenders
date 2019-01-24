@@ -25,13 +25,30 @@ public class PanelJuego implements IGameScreen {
 	private JLabel jlPoints;
 	private Timer time;
 	private BufferedImage background;
+	/**
+	 * Moneda por la cual vamos ha contratar a mas Marines
+	 */
 	private int cristal;
 	private MarineSprites spritesVector;
 	private boolean resizeBackground;
+
+	/**
+	 * ArrayList de Zergs
+	 */
 	private ArrayList<Zerg>zergs;
 	private int zergsDie;
+
+	/**
+	 * Con este atributo sabemos que squad esta seleccionado
+	 */
 	private int squadSelected;
+	/**
+	 * Con este atributo comprobamos si el juego ha acabado o no
+	 */
 	private boolean gameOver;
+	/**
+	 * Base a la que van ha atacar los Zerg
+	 */
 	private Base  base;
 	/**
 	 * Cuenta atras para cambiar de Ronda
@@ -59,12 +76,21 @@ public class PanelJuego implements IGameScreen {
 	}
 
 
-
-
+	/**
+	 * Metodo en el que pintamos el fondo de pantalla
+	 * @param g
+	 */
 	public void paintBackground(Graphics g) {
 		g.drawImage(this.background,0,0,null);
 	}
-	public void paintSpraits(Graphics g){
+
+
+	/**
+	 * Metodo en el que pintamos nuestro Squad de marines, asi como pintamos sus respectivas life bar y
+	 * realizan su accion Respectiva
+	 * @param g
+	 */
+	public void paintMarines(Graphics g){
 		if (this.refreshTime>=INVULNERABILITY){
 			//Sprite.comprobarSprites(this.squad);
 		}
@@ -88,6 +114,11 @@ public class PanelJuego implements IGameScreen {
 		this.jlPoints.setText("SPACEMARINS   ||||||||       Cristal: "+this.cristal+"    	    Soldiers : "+(this.squads[this.squadSelected].size()==SQUADPOS.length ? "MAX":this.squads[this.squadSelected].size())+"      |||||      SQUAD_SELECTED : "+(this.squadSelected != -1? this.squadSelected+1 :" NONE"));
 		this.refreshTime++;
 	}
+
+	/**
+	 * Metodo en el que pintamos a nuestros enemigos
+	 * @param graphics
+	 */
 	public void paintEnemies(Graphics graphics){
 
 
@@ -105,7 +136,11 @@ public class PanelJuego implements IGameScreen {
 	}
 
 
-
+	/**
+	 * Metodo en el que cargamos una Imagen y retornamos el BufferedImage obtenido
+	 * @param resource : String Ruta al archivo
+	 * @return : BufferedImage
+	 */
 	public BufferedImage chargeSprite(String resource){
 		BufferedImage bf = null;
 		try {
@@ -123,6 +158,10 @@ public class PanelJuego implements IGameScreen {
 
 
 	}
+
+	/**
+	 * Metodo en el que generamos los componentes que se van  ha introducir en nuestra interfaz
+	 */
 	public void genComponents(){
 		GridBagConstraints settingsObject = new GridBagConstraints();
 		settingsObject.gridx= 1;
@@ -150,6 +189,14 @@ public class PanelJuego implements IGameScreen {
 		this.jlPoints.setFont(new Font(Font.SANS_SERIF,Font.BOLD,18));
 		pantallaJuego.add(this.jlPoints,settingsObject);
 	}
+
+	/**
+	 * Metodo en el que reescalamos una Imagen
+	 * @param width
+	 * @param height
+	 * @param img
+	 * @return
+	 */
 	public BufferedImage resizeImage(int width,int height,BufferedImage img){
 		Image image  = img.getScaledInstance(width,height,0);
 		BufferedImage bf = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
@@ -159,6 +206,10 @@ public class PanelJuego implements IGameScreen {
 		return bf;
 	}
 
+	/**
+	 * Comprobamos los sprites muertos, para limpiar asi los squads, comprobamos si estan en stado "M" de muerto
+	 * y en ese caso los destruimos de nuetro ArrayList en el caso de los zergs nos dan 10 de cristal por cada enemigo abatido
+	 */
 	public void comprobarMuertos(){
 		for (int i = 0; i < this.zergs.size() ; i++) {
 				if (this.zergs.get(i).getState().equals("M")){
@@ -175,6 +226,11 @@ public class PanelJuego implements IGameScreen {
 			}
 		}
 	}
+
+	/**
+	 * Metodo en el que pintamos la Base
+	 * @param graphics
+	 */
 	public void paintBase(Graphics graphics){
 		graphics.drawImage(base.getCanvas(),base.getX(),base.getY(),base.getWidth(),base.getHeight(),null);
 		graphics.drawImage(base.getLifeBar().getBf(),base.getLifeBar().getX(),base.getLifeBar().getY(),base.getWidth(),SpriteLife.MAX_HEIGHT,null);
@@ -187,6 +243,10 @@ public class PanelJuego implements IGameScreen {
 			this.pantallaJuego.setGameScreen(looseScreen);
 		}
 	}
+
+	/**
+	 * Comprobamos si los enemigos de los sprites han muerto, si eso es asi se ponen a nulo
+	 */
 	public void comprobarMuertesEnemigos(){
 
 		for (int i = 0; i <this.squads.length ; i++) {
@@ -203,6 +263,11 @@ public class PanelJuego implements IGameScreen {
 		}
 	}
 
+	/**
+	 * MEtodo en el que inicializamos todo los componentes que van a intervenir en nuestri juego
+	 * tanto los arrayLIst de los squads como el contador de rondas y el game Over, asi como activamos
+	 * un Timer que va a contar cada 1000 ms para controlar diferentes aspectos de la partida
+	 */
 	@Override
 	public void startComponents() {
 		this.spritesVector = new MarineSprites(MAX_WIDTH,MAX_WIDTH);
@@ -244,6 +309,11 @@ public class PanelJuego implements IGameScreen {
 		genComponents();
 	}
 
+	/**
+	 * Metodo en el que pintamos los diferentes elementos de nuestro
+	 * panel de juego
+	 * @param g
+	 */
 	@Override
 	public void paintElements(Graphics g) {
 		if (!this.resizeBackground){
@@ -253,7 +323,7 @@ public class PanelJuego implements IGameScreen {
 		}
 		paintBackground(g);
 		paintBase(g);
-		paintSpraits(g);
+		paintMarines(g);
 		paintEnemies(g);
 		comprobarMuertesEnemigos();
 		comprobarMuertos();
@@ -273,11 +343,17 @@ public class PanelJuego implements IGameScreen {
 
 	}
 
+	/**
+	 * Metodo en el que primero comprobamos el click del raton en el caso de que sea el izquierdo,
+	 * Generamos un marine siempre y cuando tengamos coste para ello y no superemos el maximo del SQUAD
+	 * el derecho nos permite mover a los marines de una posicion a otra
+	 * @param e : MouseEvent
+	 */
 	@Override
 	public void mouseClick(MouseEvent e) {
 		if (SwingUtilities.isLeftMouseButton(e)){
 			if (cristal >= COST_MARINE){
-				if (this.squadSelected != -1 && this.squads[this.squadSelected].size()<=SQUADPOS.length){
+				if (this.squadSelected != -1 && this.squads[this.squadSelected].size()<SQUADPOS.length){
 					this.squads [this.squadSelected].add(new Marine());
 					cristal-=COST_MARINE;
 				}
@@ -321,6 +397,12 @@ public class PanelJuego implements IGameScreen {
 			}
 		}
 	}
+
+	/**
+	 * Metodo en  el que generamos las rondas y comprobamos si ha acabado con todos los
+	 * enemigos en el caos en el que si, modificamos el panel de la pantalla de Juego por el panel de
+	 * Victoria
+	 */
 	public void comprobarWin(){
 		if (this.zergs.size()==0 && cuentaAtrasRonda<0){
 			this.round++;

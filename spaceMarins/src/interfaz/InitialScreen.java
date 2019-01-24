@@ -9,21 +9,33 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+/**
+ * @author  MisaelHarinero
+ * Clase que nos muestra la pantalla Inicial
+ * Nos deja elegir entre dos opciones  que capturaremos con un evento de teclado:
+ * Si pulamos la tecla :
+ *          P : Iniciar la Partida
+ *          E : Cerraremos el Juego
+ */
 public class InitialScreen implements IGameScreen {
     private PantallaJuego pantalla;
     private BufferedImage background;
     public InitialScreen(PantallaJuego pantalla){
         this.pantalla = pantalla;
-        this.pantalla.setBackground(Color.BLACK);
+
     }
     @Override
     public void startComponents() {
+        this.pantalla.removeAll();
+        this.pantalla.setVisible(false);
         ResourcesGetter.chargeBackgrounds();
+        this.pantalla.setBackground(Color.BLACK);
         this.background = ResourcesGetter.getBackInit();
         this.pantalla.setLayout(new GridBagLayout());
         JLabel letters = new JLabel();
         letters.setIcon(new ImageIcon(ResourcesGetter.getLettersInit()));
         this.pantalla.add(letters);
+        this.pantalla.setVisible(true);
     }
 
     @Override
@@ -64,6 +76,7 @@ public class InitialScreen implements IGameScreen {
             }
             case KeyEvent.VK_E:{
                 this.pantalla.exit();
+                System.exit(0);
                 break;
             }
         }

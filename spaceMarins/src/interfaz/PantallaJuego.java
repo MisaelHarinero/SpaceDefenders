@@ -4,6 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * @author  MisaelHarinero
+ * Clase que hereda de JPanel, que va ha a unificar las pantallas de juego y en ella se van a dibujar todo los componentes de
+ * nuestra interfaz
+ */
 public class PantallaJuego extends JPanel implements MouseListener, MouseMotionListener, Runnable, ComponentListener, KeyListener {
 
     private IGameScreen gameScreen;

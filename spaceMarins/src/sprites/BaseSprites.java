@@ -5,6 +5,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * @author Misael Harinero
+ * Clase en la que cargamos todos los sprites de la base
+ */
 public class BaseSprites {
     private BufferedImage imageTotal;
     private BufferedImage secuencesImages [] ;
@@ -26,6 +30,13 @@ public class BaseSprites {
 
 
     }
+
+    /**
+     * Metodo en el que hacemos un subImage con la SpriteSheet cargada iniciamente
+     * @param x
+     * @param y
+     * @return
+     */
     public BufferedImage cargarImgRescal(int x, int y){
         BufferedImage bf = this.imageTotal.getSubimage(x,y,DIMENSIONS_WIDTH,DIMENSIONS_HEIGHT);
         return  bf;

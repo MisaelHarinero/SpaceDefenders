@@ -7,6 +7,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * @author Misael Harinero
+ * Clase en la que cargamos todos los sprites de nuestro personaje Zerg
+ */
 public class ZergsSprites {
     private BufferedImage bfTotalImg;
     private BufferedImage images [][];
@@ -52,6 +56,12 @@ public class ZergsSprites {
 
 
     }
+    /**
+     * Metodo en el que hacemos un subImage con la SpriteSheet cargada iniciamente
+     * @param x
+     * @param y
+     * @return
+     */
     public BufferedImage cargarImgRescal(int x, int y){
         BufferedImage bf = this.bfTotalImg.getSubimage(x,y,DIMENSIONS,DIMENSIONS);
         return  bf;

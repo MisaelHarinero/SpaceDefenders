@@ -4,6 +4,19 @@ import sprites.SpriteLife;
 
 import java.util.ArrayList;
 
+/**
+ * @author Misael Harinero
+ * Clase que hereda de de Sprite, y que modifica sus atributos para actuar como un Zerg
+ * En la que tenemos una tabla de estados dependiendo de los estados realizara una accion :
+ *     TABLA DE ACCION :
+ *   -----------------------
+ *      W    |    Cuando se encuentra en estado W nuestro personaje se mueve
+ *      S    |    Cuando se encuentra en estado S nuestro personaje se queda parado en el sitio
+ *      A    |    Cuadno se encuentra en estado A nuestro personaje esta atacando
+ *      M    |    Cuando se encuentra en estado M nuestro personaje esta muerto
+ *      B    |    Cuando se encuentra en estad  B nuestro personaje estara realizando su habilidad especial
+ *
+ */
 public class Zerg extends Sprite {
     private int turnAbility;
     private final static int ATACK_RATIO = 100;
@@ -19,6 +32,12 @@ public class Zerg extends Sprite {
     }
 
 
+    /**
+     * Metodo en el que dependiendo en que estado se encuentre nuestro personaje realizara una accion u otra
+     * @param screenWeight
+     * @param screenHeight
+     * @param enemies
+     */
     public void doAction(int screenWeight, int screenHeight, ArrayList<Marine> enemies []) {
         switch (getState()) {
             case "S": {
@@ -57,6 +76,10 @@ public class Zerg extends Sprite {
         }
     }
 
+    /**
+     * Metodo en el que el zerg realiza su habilidad de invulnerabilidad y sanacion, comprobamos que se esta entre los limites, y si no lo
+     * ponemos en modo ataque
+     */
     public void doAbility() {
         if (turnAbility >= 0 && turnAbility < 30) {
             changeAbilityImage();
@@ -69,6 +92,10 @@ public class Zerg extends Sprite {
 
 
     }
+
+    /**
+     * MEtodo en el que comprobamos si nuestro zerg esta en rango de atacar a la base o no
+     */
     public void sBase(){
         if (getEnemy() == null){
             if (Math.abs(getX() - (base.getX()+base.getWidth()/2)) < (ATACK_RATIO-80)+base.getWidth() && Math.abs(getY() -(base.getY()+base.getWidth()/2)) < (ATACK_RATIO-80)+base.getHeight()){
@@ -78,7 +105,9 @@ public class Zerg extends Sprite {
         }
 
     }
-
+    /**
+     * MEtodo en el que comprobamos si nuestro zerg esta en rango de atacar a un enemigo o no
+     */
     public void sEnemy(ArrayList<Marine> enemies []) {
         for (int i = 0; i < enemies.length; i++) {
             for (int j = 0; j < enemies[i].size(); j++) {
@@ -95,6 +124,9 @@ public class Zerg extends Sprite {
     }
 
 
+    /**
+     * Metodo en el que modificamos los sprites de el periodo de habilidad para que de el efecto como que se protege en un huevo
+     */
     public void changeAbilityImage() {
         switch (this.turnAbility) {
             case 1: {
@@ -133,6 +165,9 @@ public class Zerg extends Sprite {
         }
     }
 
+    /**
+     * MEtodo en el que modificamos los sprites de nuestro zerg dependiendo su velocidad
+     */
     public void setSpritesForMovement() {
 
         if (getxSpeed() > 0 && getySpeed() > 0 && getMovement() == 1) {

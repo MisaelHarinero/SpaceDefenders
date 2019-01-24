@@ -9,6 +9,14 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+/**
+ * @author  MisaelHarinero
+ * Clase que nos muestra la pantalla de Derrota
+ * Nos deja elegir entre dos opciones  que capturaremos con un evento de teclado:
+ * Si pulamos la tecla :
+ *          M : Volveremos al Menu
+ *          E : Cerraremos el Juego
+ */
 public class LooseScreen implements IGameScreen{
     private PantallaJuego pantalla;
     private BufferedImage background;
@@ -18,13 +26,15 @@ public class LooseScreen implements IGameScreen{
 
     @Override
     public void startComponents() {
-        this.pantalla.removeAll();
+        this.pantalla.setVisible(false);
         this.pantalla.setBackground(Color.BLACK);
+        this.pantalla.repaint();
         this.background = ResourcesGetter.getBackFinish();
         this.pantalla.setLayout(new GridBagLayout());
         JLabel letters = new JLabel();
         letters.setIcon(new ImageIcon(ResourcesGetter.getLettersLoose()));
         this.pantalla.add(letters);
+        this.pantalla.setVisible(true);
 
     }
 
@@ -56,15 +66,15 @@ public class LooseScreen implements IGameScreen{
     @Override
     public void onKeyPress(KeyEvent e) {
         switch (e.getKeyCode()){
-            case  KeyEvent.VK_V:{
+            case  KeyEvent.VK_M:{
                 InitialScreen initialScreen =  new InitialScreen(this.pantalla);
                 initialScreen.startComponents();
-                this.pantalla.removeAll();
                 this.pantalla.setGameScreen(initialScreen);
                 break;
             }
             case KeyEvent.VK_E:{
                 this.pantalla.exit();
+                System.exit(0);
                 break;
             }
         }

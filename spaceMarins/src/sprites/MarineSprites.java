@@ -6,6 +6,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * @author Misael Harinero
+ * Clase en la que cargamos todos los sprites de nuestro personaje Marine Espacial,
+ * en vez de usar el metodo de la SpriteSheet he cargado todas las imagenes ya recortadas previamente.
+ */
 public class MarineSprites {
     private BufferedImage mWs;
     private BufferedImage mWp;
@@ -45,6 +50,12 @@ public class MarineSprites {
 
 
     }
+
+    /**
+     * Metodo en el que cargamos todas las imagenes una por una
+     * @param width
+     * @param height
+     */
     public void chargeSprites(int width, int height){
         String letras [] = {"A","W","D","S","X","E","Q","Z"};
         String rutaFin[] = {"s.png","p.png","ml.png","mr.png"};
