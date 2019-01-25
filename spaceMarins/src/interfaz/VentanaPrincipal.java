@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class VentanaPrincipal {
 	private JFrame ventana;
-	private PanelJuego panel;
+	private PantallaJuego panel;
 
 	public VentanaPrincipal() {
 		this.ventana = new JFrame("Ejercicio01T9");
@@ -20,7 +20,7 @@ public class VentanaPrincipal {
 	}
 
 	public void incializarComponentes() {
-		this.panel = new PanelJuego();
+		this.panel = new PantallaJuego(this.ventana);
 		this.ventana.add(this.panel);
 	}
 }

@@ -1,15 +1,24 @@
 package model;
 
 import sprites.MarineSprites;
+import sprites.SpriteLife;
+import sprites.ZergsSprites;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+/**
+ * @author Misael Harinero
+ * Clase que nos permite generar un dibujo en un panel en la cual le podemos dar cordenadas asi como animarlo para
+ * que este se mueva solo y pueda luchar contra otros Sprites.
+ */
 public class Sprite {
     private final static int MAX_WIDTH_HEIGHT = 40;
     private final static int INITIAL_POINT_X = 500;
     private final static int INITIAL_POINT_Y = 500;
+    private final static int ATACK_RATIO = 100;
+    private final static  int ACCEL = 1;
     private BufferedImage canvas;
     private int width;
     private int height;
@@ -18,23 +27,50 @@ public class Sprite {
     private int xSpeed;
     private int ySpeed;
     private static  MarineSprites marineSprites;
+    private static ZergsSprites zergSprites;
     private boolean colission;
     private int movement;
+    private int xPointDestiny;
+    private int yPointDestiny;
+    private Sprite enemy;
+    private String state;
+    private int life;
+    private SpriteLife lifeBar;
 
     public Sprite() {
         this.canvas = Sprite.getMarineSprites().getmSs();
         if (this.canvas == null){
             generarCuadradoNegro();
+
         }
+        state = "S";
         this.movement = 1;
         this.width = MAX_WIDTH_HEIGHT;
         this.height = MAX_WIDTH_HEIGHT;
         this.x = INITIAL_POINT_X;
         this.y = INITIAL_POINT_Y;
+        this.xPointDestiny = -1;
+        this.yPointDestiny = -1;
+        this.xSpeed = ACCEL;
+        this.ySpeed = ACCEL;
         this.colission = false;
-        generarAceleracionAlt();
     }
+    public Sprite(int xFinally, int yFinally, int maxWith, int maxHeight,int num) {
+        this.canvas = Sprite.getZergSprites().getImages()[8][0];
+        if (this.canvas == null){
+            generarCuadradoNegro();
 
+        }
+        state = "W";
+        this.movement = 2;
+        this.width = MAX_WIDTH_HEIGHT;
+        this.height = MAX_WIDTH_HEIGHT;
+        pointStart(maxWith, maxHeight);
+        this.xSpeed = ACCEL;
+        this.ySpeed = ACCEL;
+        setEndPoints(xFinally,yFinally);
+        this.colission = false;
+    }
     public Sprite(BufferedImage img, int width, int height, int x, int y) {
         this.canvas = img;
         if (this.canvas == null){
@@ -44,6 +80,16 @@ public class Sprite {
         this.width = width;
         this.x = x;
         this.y = y;
+
+
+    }
+    public Sprite( int width, int height, int x, int y) {
+        this.canvas = null;
+        this.height = height;
+        this.width = width;
+        this.x = x;
+        this.y = y;
+
 
     }
     public void generarCuadradoNegro() {
@@ -105,45 +151,29 @@ public class Sprite {
         this.ySpeed = ySpeed;
     }
 
+    /**
+     * Funciona de manera muy similar a walk()
+     * @param maxScreenWidth
+     * @param maxScreenHeight
+     */
     public void move(int maxScreenWidth, int maxScreenHeight) {
-        if ((x + width) >= maxScreenWidth) {
-            this.xSpeed = -1 *  Math.abs(xSpeed);
+        if (x != xPointDestiny && xPointDestiny !=-1){
+            x+= xSpeed;
+        }else{
+            xPointDestiny = -1;
+            xSpeed=0;
         }
-        if (x <= 0) {
-            this.xSpeed =  Math.abs(xSpeed);
+        if (y != yPointDestiny && yPointDestiny != -1){
+            y+=ySpeed;
+        }else{
+            yPointDestiny = -1;
+            ySpeed = 0;
         }
-
-        if (y + height >= maxScreenHeight) {
-            this.ySpeed = -1 *  Math.abs(ySpeed);
+        if (yPointDestiny == -1 && xPointDestiny == -1){
         }
-        if (y <= 0) {
-            this.ySpeed =  Math.abs(ySpeed);
-        }
-        this.x += this.xSpeed;
-        this.y += this.ySpeed;
-
+        this.getLifeBar().actualizarCordenadas(getX(),getY());
     }
 
-    public void generarAceleracionAlt() {
-        this.xSpeed = xSpeed;
-        this.ySpeed = ySpeed;
-        this.xSpeed = genAlt();
-        this.ySpeed = genAlt();
-        while (this.xSpeed == 0 && this.ySpeed == 0) {
-            switch ((int) Math.floor(Math.random() * 2)) {
-                case 0: {
-                    this.xSpeed = genAlt();
-                    break;
-                }
-                case 1: {
-                    this.ySpeed = genAlt();
-                    break;
-                }
-            }
-        }
-
-
-    }
 
     public int genAlt() {
         return (int) Math.floor(Math.random() * 5);
@@ -173,62 +203,7 @@ public class Sprite {
         this.movement = movement;
     }
 
-    public static void comprobarSprites(ArrayList<Sprite> sprites) {
-        int speedAuxX = 0;
-        int speedAuxY = 0;
-        ArrayList<Integer> post = new ArrayList<>();
-        for (int i = 0; i < sprites.size(); i++) {
-            for (int j = 0; j < sprites.size(); j++) {
-                if (i != j) {
-                    if (sprites.get(i)!=null&&sprites.get(j)!=null) {
 
-                        if (((sprites.get(i).getX() + sprites.get(i).getWidth()) > (sprites.get(j).getX())) && (sprites.get(j).getX() >= (sprites.get(i).getX()))
-                                && ((sprites.get(i).getY() + sprites.get(i).getHeight()) > (sprites.get(j).getY())) && (sprites.get(j).getY() >= (sprites.get(i).getY()))) {
-                                   if (!sprites.get(i).isColission()&&!sprites.get(j).isColission()){
-                                       if ((sprites.get(i).getxSpeed()>0 && sprites.get(j).getxSpeed()>0) ||(sprites.get(i).getxSpeed()<0 && sprites.get(j).getxSpeed()<0)
-                                               || (sprites.get(i).getySpeed()>0 && sprites.get(j).getySpeed()>0)||(sprites.get(i).getySpeed()<0 && sprites.get(j).getySpeed()<0)){
-
-                                           speedAuxX = sprites.get(i).getxSpeed();
-                                           speedAuxY = sprites.get(i).getySpeed();
-                                           sprites.get(i).setxSpeed(sprites.get(j).getxSpeed());
-                                           sprites.get(i).setySpeed(sprites.get(j).getySpeed());
-                                           sprites.get(j).setxSpeed(speedAuxX);
-                                           sprites.get(j).setySpeed(speedAuxY);
-
-                                       }else{
-                                           sprites.get(j).setxSpeed(0-sprites.get(j).getxSpeed());
-                                           sprites.get(j).setySpeed(0-sprites.get(j).getySpeed());
-                                           sprites.get(i).setxSpeed(0-sprites.get(i).getxSpeed());
-                                           sprites.get(i).setySpeed(0-sprites.get(i).getySpeed());
-                                       }
-                                       sprites.get(i).setColission(true);
-                                       sprites.get(j).setColission(true);
-                                   }else{
-                                       sprites.get(i).setColission(false);
-                                       sprites.get(j).setColission(false);
-
-                                   }
-
-
-                        }else{
-                            if (sprites.get(i).isColission()&&sprites.get(j).isColission()){
-                                sprites.get(i).setColission(false);
-                                sprites.get(j).setColission(false);
-                            }
-
-                        }
-                    }
-
-
-                }
-
-            }
-
-
-        }
-
-
-    }
 
     public static MarineSprites getMarineSprites() {
         return marineSprites;
@@ -239,12 +214,182 @@ public class Sprite {
     }
 
 
+    /**
+     * Sistema de movimiento de 10 frames en 10 frames para contar el numero de frames para cambiar el sprite y asi simular una animacion
+     * de caminar
+     */
     public void changeSprite(){
         if (movement >= 1&&movement!=10){
             movement ++;
 
         }if (movement == 10){
             movement =1;
+        }
+    }
+
+    /**
+     * Metodo en el que nuestro sprite camina hasta el punto de destino,  comprobamos las cordenadas
+     * primero que no nos hayamos pasado de la de destino vamos aumentando y aumentando las cordenadas hasta llegar a la de destino,
+     * una vez en la de destino la velocidad tanto de x como de y se pone a 0, si una de las cordenadas deseadas se llega antes de la otra,
+     * esa velocidad se pone a 0 pero la otra continua hasta llegar a la cordenada exacta
+     */
+    public  void walk(){
+        if (x != xPointDestiny && xPointDestiny !=-1){
+            x+= xSpeed;
+        }else{
+            xPointDestiny = -1;
+            xSpeed=0;
+        }
+        if (y != yPointDestiny && yPointDestiny != -1){
+            y+=ySpeed;
+        }else{
+            yPointDestiny = -1;
+            ySpeed = 0;
+        }
+        if (yPointDestiny == -1 && xPointDestiny == -1){
+            this.state = "S";
+        }
+
+    }
+
+    /**
+     * Le pasamos unas cordenadas de destino, y respecto esas cordenadas calculamos cual seria la velocidad para llegar al punto deseado
+     * @param xEnd
+     * @param yEnd
+     */
+    public void setEndPoints(int xEnd,int yEnd){
+        this.xPointDestiny = xEnd;
+        this.yPointDestiny = yEnd;
+        if (xEnd<x){
+            xSpeed = -1*Math.abs(ACCEL);
+        }else{
+            xSpeed = Math.abs(ACCEL);
+        }
+        if (yEnd<y){
+            ySpeed = -1*Math.abs(ACCEL);
+        }else {
+            ySpeed = Math.abs(ACCEL);
+        }
+        this.state = "W";
+
+
+    }
+
+    public int getxPointDestiny() {
+        return xPointDestiny;
+    }
+
+    public void setxPointDestiny(int xPointDestiny) {
+        this.xPointDestiny = xPointDestiny;
+    }
+
+    public int getyPointDestiny() {
+        return yPointDestiny;
+    }
+
+    public void setyPointDestiny(int yPointDestiny) {
+        this.yPointDestiny = yPointDestiny;
+    }
+
+
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public Sprite getEnemy() {
+        return enemy;
+    }
+
+    public void setEnemy(Sprite enemy) {
+        this.enemy = enemy;
+    }
+    public int getLife() {
+        return life;
+    }
+
+    public void setLife(int life) {
+        this.life = life;
+    }
+
+    public SpriteLife getLifeBar() {
+        return lifeBar;
+    }
+
+    public void setLifeBar(SpriteLife lifeBar) {
+        this.lifeBar = lifeBar;
+    }
+
+    /**
+     * Metodo en el que un sprite a taca a su enemigo en el caso de que este no sea nulo, luego comprobamos si tiene la etiqueta de muerto,
+     * si es asi lo ponemos a null, luego  si la vida es 0 o menor y no esta muerto lo ponemos a muerto, y si no esta muerto, y no esta en
+     * habilidad realizamos el ataque y disminuimos en uno su vida
+     */
+    public void atackEnemy(){
+        if (enemy != null){
+            if (this.enemy.getState().equals("M")){
+                this.enemy = null;
+                this.state = "S";
+
+            }else {
+                if (this.enemy.getLife() <= 0 && !enemy.getState().equals("M")) {
+                    this.enemy.setState("M");
+                    this.state = "S";
+                    this.enemy = null;
+                } else {
+                  if (!enemy.getState().equals("B")){
+                      this.enemy.setLife(this.enemy.getLife() - 1);
+                  }
+                }
+            }
+        }else{
+            state = "S";
+        }
+
+    }
+
+    public static ZergsSprites getZergSprites() {
+        return zergSprites;
+    }
+
+    public static void setZergSprites(ZergsSprites zergSprites) {
+        Sprite.zergSprites = zergSprites;
+    }
+
+    /**
+     * Metodo en el que generamos un punto aleatorio entre los extremos de nuestra ventana para generar ahi sprites
+     * @param maxWith
+     * @param maxHeight
+     */
+    public void pointStart(int maxWith, int maxHeight) {
+        switch ((int) Math.floor(Math.random() * 4)) {
+            case 0: {
+                setX((int) Math.floor(Math.random() * (maxWith-10)));
+                setY(10);
+                break;
+            }
+            case 1: {
+                setX((int) Math.floor(Math.random() * maxWith));
+                setY(maxHeight-10);
+                break;
+            }
+            case 2: {
+                setX(10);
+                setY((int) Math.floor(Math.random() * (maxWith-10)));
+
+                break;
+            }
+            case 3: {
+                setX(maxWith-10);
+                setY((int) Math.floor(Math.random() * (maxWith-10)));
+
+
+                break;
+            }
         }
     }
 }
