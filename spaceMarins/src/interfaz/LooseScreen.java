@@ -26,15 +26,16 @@ public class LooseScreen implements IGameScreen{
 
     @Override
     public void startComponents() {
-        this.pantalla.setVisible(false);
+        this.pantalla.removeAll();
         this.pantalla.setBackground(Color.BLACK);
-        this.pantalla.repaint();
         this.background = ResourcesGetter.getBackFinish();
         this.pantalla.setLayout(new GridBagLayout());
         JLabel letters = new JLabel();
         letters.setIcon(new ImageIcon(ResourcesGetter.getLettersLoose()));
         this.pantalla.add(letters);
-        this.pantalla.setVisible(true);
+        this.pantalla.revalidate();
+        this.pantalla.repaint();
+
 
     }
 

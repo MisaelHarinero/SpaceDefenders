@@ -27,7 +27,6 @@ public class InitialScreen implements IGameScreen {
     @Override
     public void startComponents() {
         this.pantalla.removeAll();
-        this.pantalla.setVisible(false);
         ResourcesGetter.chargeBackgrounds();
         this.pantalla.setBackground(Color.BLACK);
         this.background = ResourcesGetter.getBackInit();
@@ -35,7 +34,8 @@ public class InitialScreen implements IGameScreen {
         JLabel letters = new JLabel();
         letters.setIcon(new ImageIcon(ResourcesGetter.getLettersInit()));
         this.pantalla.add(letters);
-        this.pantalla.setVisible(true);
+        this.pantalla.revalidate();
+        this.pantalla.repaint();
     }
 
     @Override

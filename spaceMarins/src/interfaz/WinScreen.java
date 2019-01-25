@@ -27,17 +27,18 @@ public class WinScreen implements IGameScreen{
 
     @Override
     public void startComponents() {
-       this.pantalla.setVisible(false);
+
+        this.pantalla.removeAll();
         this.background = ResourcesGetter.getBackWin();
         this.pantalla.setLayout(new GridBagLayout());
-        this.pantalla.repaint();
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx= 0;
         constraints.gridy=0;
         JLabel letters = new JLabel();
         letters.setIcon(new ImageIcon(ResourcesGetter.getLettersWin()));
         this.pantalla.add(letters,constraints);
-        this.pantalla.setVisible(true);
+        this.pantalla.revalidate();
+        this.pantalla.repaint();
 
     }
 
