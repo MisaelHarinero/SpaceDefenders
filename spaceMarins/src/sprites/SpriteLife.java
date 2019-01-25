@@ -44,7 +44,7 @@ public class SpriteLife {
         this.x = x+3;
         this.y = y-3;
     }
-    public void recibirDaño(int life){
+    public void recibirDano(int life){
         this.life = life;
         genBuffer();
     }

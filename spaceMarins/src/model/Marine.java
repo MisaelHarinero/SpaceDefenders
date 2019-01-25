@@ -180,7 +180,7 @@ public class Marine extends  Sprite {
             }
             case "A":{
                 if (timeRecharge == -1){
-                    getLifeBar().recibirDaño(this.getLife()/20);
+                    getLifeBar().recibirDano(this.getLife()/20);
                     atackEnemy();
                 }else{
                     setState("R");
@@ -191,7 +191,7 @@ public class Marine extends  Sprite {
             case "R":{
                 if (timeRecharge>=0 &&timeRecharge<TIME_RECHARGE){
                         timeRecharge++;
-                    getLifeBar().recibirDaño(this.getLife()/20);
+                    getLifeBar().recibirDano(this.getLife()/20);
 
                 }else{
                     timeRecharge = -1;

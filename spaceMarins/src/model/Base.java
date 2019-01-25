@@ -3,8 +3,6 @@ package model;
 import sprites.BaseSprites;
 import sprites.SpriteLife;
 
-import java.awt.image.BufferedImage;
-
 /**
  * @author Misael Harinero
  * Clase que hereda de de Sprite, que actuara como base zeg que nuestros marines espaciales deberan
@@ -74,7 +72,7 @@ public class Base extends Sprite {
             changeSpriteBase();
             getLifeBar().genBuffer();
         }else{
-            getLifeBar().recibirDaño(getLife()/1000);
+            getLifeBar().recibirDano(getLife()/1000);
         }
 
 

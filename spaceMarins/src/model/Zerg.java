@@ -53,7 +53,7 @@ public class Zerg extends Sprite {
                 break;
             }
             case "A": {
-                getLifeBar().recibirDaño(getLife() / 5);
+                getLifeBar().recibirDano(getLife() / 5);
                 if (getLife() < 50 && turnAbility != -1) {
                     setState("B");
                 } else {
@@ -62,7 +62,7 @@ public class Zerg extends Sprite {
                 break;
             }
             case "B": {
-                getLifeBar().recibirDaño(getLife() / 5);
+                getLifeBar().recibirDano(getLife() / 5);
                 doAbility();
 
                 break;
